@@ -1,0 +1,27 @@
+#!/bin/bash
+
+#PBS -N 1
+#PBS -l nodes=1:ppn=24
+#PBS -l walltime=9999:00:00
+#PBS -q scores
+#PBS -V
+#PBS -S /bin/bash
+cd /public/home/huangzhijing/ziw/Multiwfn/Hole-electron-index/BPQDs
+for i in {1..16}  
+do
+    FILE_NAME="${i}.fchk"
+    
+    if [[ ! -f "${FILE_NAME}" ]]; then
+        echo "${FILE_NAME} does not exist, skipping..."
+        continue
+    fi
+
+    cat << EOF > calcall.txt
+300
+5
+EOF
+
+    Multiwfn ${FILE_NAME} < calcall.txt | tee -a out.txt 
+
+    grep "Magnitude of dipole moment" ./out.txt | nl >> dipole.txt; echo >> dipole.txt
+done
